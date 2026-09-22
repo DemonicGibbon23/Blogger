@@ -2,8 +2,24 @@ const API_URL = "http://localhost:5000/api/auth";
 
 const registerForm = document.getElementById("registerForm");
 const loginForm = document.getElementById("loginForm");
-
 const message = document.getElementById("message");
+
+const saveUser = (user) => {
+    if (!user) return;
+
+    localStorage.setItem(
+        "bloggrUser",
+        JSON.stringify({
+            name: user.name || "User",
+            email: user.email || ""
+        })
+    );
+};
+
+const redirectToHome = (user) => {
+    saveUser(user);
+    window.location.href = "home.html";
+};
 
 
 // -------------------------
@@ -43,14 +59,13 @@ registerForm.addEventListener("submit", async (event) => {
             }
         );
 
-
         const data = await response.json();
 
         message.textContent = data.message;
 
-
         if (response.ok) {
             registerForm.reset();
+            redirectToHome(data.user);
         }
 
     } catch (error) {
@@ -98,14 +113,13 @@ loginForm.addEventListener("submit", async (event) => {
             }
         );
 
-
         const data = await response.json();
 
         message.textContent = data.message;
 
-
         if (response.ok) {
             loginForm.reset();
+            redirectToHome(data.user);
         }
 
     } catch (error) {

@@ -109,3 +109,53 @@ hr {
 
     font-weight: bold;
 }
+
+
+.home-container {
+    width: 500px;
+
+    background: white;
+
+    padding: 40px 30px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+    text-align: center;
+}
+
+
+.home-container h1 {
+    margin-bottom: 20px;
+}
+
+
+.home-container p {
+    margin: 10px 0;
+    color: #555;
+}
+
+
+.logout-btn {
+    margin-top: 20px;
+
+    padding: 10px 16px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #d9534f;
+
+    color: white;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+
+.logout-btn:hover {
+    background: #c9302c;
+}
