@@ -1,43 +1,30 @@
+require("dotenv").config;
 const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-
+const path = require("path");
 const connectDatabase = require("./src/config/database");
-const authRoutes = require("./src/routes/authRoutes");
-
-dotenv.config();
 
 const app = express();
+const PORT = 5000;
 
+connectDatabase();
 
-// Middleware
-app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
-
-// Routes
-app.use("/api/auth", authRoutes);
-
-
-// Basic test route
-app.get("/", (req, res) => {
-    res.json({
-        message: "Bloggr backend is running"
-    });
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Bloggr server is running!"
+  });
 });
 
+app.get("/api/:name", (req, res) => {
+  const name = req.params.name;
+  res.json({
+    message: "Hello "+name
+  });
+})
 
-// Connect to database and start server
-const startServer = async () => {
-
-    await connectDatabase();
-
-    app.listen(process.env.PORT, () => {
-        console.log(
-            `Server running at http://localhost:${process.env.PORT}`
-        );
-    });
-
-};
-
-startServer();
+app.listen(PORT, () => {
+  console.log(`Bloggr is running at http:localhost:${PORT}`);
+});
