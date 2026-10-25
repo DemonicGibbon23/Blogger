@@ -1,76 +1,39 @@
+
 const authService = require("../services/authService");
 
-
-// Register
-const register = async (req, res) => {
-
+async function register(req, res) {
     try {
+        const user = await authService.registerUser({
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password
+        });
 
-        const { name, email, password } = req.body;
-
-        if (!name) {
-            return res.status(400).json({
-                message: "Name is required"
+        return res.status(201).json({
+            message: "Registration successful",
+            user
+        });
+    } catch (error) {
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: "An account with this email already exists"
             });
         }
 
-        const user = await authService.registerUser(
-            name,
-            email,
-            password
-        );
+        if (error.message.includes("required") ||
+            error.message.includes("Password must") ||
+            error.message.includes("Name cannot")) {
+            return res.status(400).json({
+                message: error.message
+            });
+        }
 
-        res.status(201).json({
-            message: "Registration successful",
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email
-            }
+        console.error("Registration error:", error);
+
+        return res.status(500).json({
+            message: "Something went wrong"
         });
-
-    } catch (error) {
-
-        res.status(400).json({
-            message: error.message
-        });
-
     }
-};
+}
 
-
-// Login
-const login = async (req, res) => {
-
-    try {
-
-        const { email, password } = req.body;
-
-        const user = await authService.loginUser(
-            email,
-            password
-        );
-
-        res.status(200).json({
-            message: "Login successful",
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email
-            }
-        });
-
-    } catch (error) {
-
-        res.status(401).json({
-            message: error.message
-        });
-
-    }
-};
-
-
-module.exports = {
-    register,
-    login
-};
+module.exports = { register };

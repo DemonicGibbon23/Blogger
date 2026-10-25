@@ -1,44 +1,55 @@
-const bcrypt = require("bcrypt");
 
+const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 
-// Register user
-const registerUser = async (name, email, password) => {
-
-    // Check whether user already exists
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-        throw new Error("User already exists");
+const registerUser = async ({ name, email, password }) => {
+    if (!name || !email || !password) {
+        throw new Error("Name, email and password are required");
     }
 
-    // Hash password
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanName) {
+        throw new Error("Name cannot be empty");
+    }
+
+    if (password.length < 8) {
+        throw new Error("Password must be at least 8 characters");
+    }
+
+    const existingUser = await User.findOne({
+        email: cleanEmail
+    });
+
+    if (existingUser) {
+        throw new Error("An account with this email already exists");
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const user = new User({
-        name,
-        email,
+    const user = await User.create({
+        name: cleanName,
+        email: cleanEmail,
         password: hashedPassword
     });
 
-    await user.save();
-
-    return user;
+    return {
+        id: user._id,
+        name: user.name,
+        email: user.email
+    };
 };
 
-
-// Login user
 const loginUser = async (email, password) => {
+    const cleanEmail = email.trim().toLowerCase();
 
-    // Find user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
         throw new Error("Invalid email or password");
     }
 
-    // Compare password
     const passwordMatch = await bcrypt.compare(
         password,
         user.password
@@ -50,7 +61,6 @@ const loginUser = async (email, password) => {
 
     return user;
 };
-
 
 module.exports = {
     registerUser,

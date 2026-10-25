@@ -1,15 +1,18 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
+
 const connectDatabase = require("./src/config/database");
+const authRoutes = require("./src/routes/authRoutes");
 
 const app = express();
 const PORT = 5000;
 
-connectDatabase();
-
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: false }));
+
+app.use("/api/auth", authRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({
