@@ -1,4 +1,4 @@
-require("dotenv").config;
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const connectDatabase = require("./src/config/database");
@@ -18,13 +18,17 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.get("/api/:name", (req, res) => {
-  const name = req.params.name;
-  res.json({
-    message: "Hello "+name
-  });
-})
+async function startServer() {
+    try {
+        await connectDatabase();
 
-app.listen(PORT, () => {
-  console.log(`Bloggr is running at http:localhost:${PORT}`);
-});
+        app.listen(PORT, () => {
+            console.log(`Bloggr running at http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error("Failed to start Bloggr:", error.message);
+        process.exit(1);
+    }
+}
+
+startServer();
