@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       required: true
     },
 
-    // "user" for everyone; "admin" for the single owner account (set via seed script only)
+
     role: {
       type: String,
       enum: ["user", "admin"],

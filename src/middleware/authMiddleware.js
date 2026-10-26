@@ -1,7 +1,4 @@
-/**
- * requireAuth – blocks unauthenticated requests to protected routes.
- * Attaches req.session.userId so controllers can identify the caller.
- */
+
 function requireAuth(req, res, next) {
   if (!req.session || !req.session.userId) {
     return res.status(401).json({ message: "You must be logged in to do that" });
@@ -9,10 +6,7 @@ function requireAuth(req, res, next) {
   next();
 }
 
-/**
- * requireAdmin – further restricts a route to the single administrator account.
- * Must be used AFTER requireAuth.
- */
+
 function requireAdmin(req, res, next) {
   if (req.session.role !== "admin") {
     return res.status(403).json({ message: "Forbidden" });
@@ -20,14 +14,11 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-/**
- * Simple in-memory rate limiter for authentication endpoints.
- * Limits each IP to `max` requests per `windowMs` milliseconds.
- */
+
 function rateLimiter({ windowMs = 15 * 60 * 1000, max = 20 } = {}) {
   const hits = new Map();
 
-  // Clean up old entries periodically to avoid memory leak
+  
   setInterval(() => {
     const now = Date.now();
     for (const [key, entry] of hits.entries()) {

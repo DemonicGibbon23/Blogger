@@ -1,9 +1,8 @@
 /**
  * shared.js – utilities used by all pages.
- * Uses relative API URLs (never hard-coded localhost).
  */
 
-/* ── API helper ───────────────────────────────────────────────── */
+
 async function api(path, options = {}) {
   const res = await fetch(path, {
     credentials: "same-origin",
@@ -15,7 +14,7 @@ async function api(path, options = {}) {
   return { ok: res.ok, status: res.status, data };
 }
 
-/* ── Session / auth ───────────────────────────────────────────── */
+
 let _session = null;
 
 async function getSession(force = false) {
@@ -37,7 +36,7 @@ async function requireAdmin(redirectTo = "/") {
   return user;
 }
 
-/* ── Navigation ───────────────────────────────────────────────── */
+
 async function renderNav(activeHref = "") {
   const user = await getSession();
   const nav = document.getElementById("main-nav");
@@ -79,7 +78,6 @@ async function renderNav(activeHref = "") {
   }
 }
 
-/* ── DOM helpers ──────────────────────────────────────────────── */
 function el(id) { return document.getElementById(id); }
 
 function setHTML(id, html) {
@@ -105,7 +103,7 @@ function showAlert(id, msg, type = "error") {
 
 function hideAlert(id) { hide(id); }
 
-/* ── Formatting ───────────────────────────────────────────────── */
+
 function fmtDate(iso) {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-US", {
@@ -118,7 +116,7 @@ function fmtTags(tags) {
   return tags.map(t => `<a class="tag" href="/explore.html?tag=${encodeURIComponent(t)}">${escHtml(t)}</a>`).join(" ");
 }
 
-/* ── XSS safety ───────────────────────────────────────────────── */
+
 function escHtml(str) {
   return String(str ?? "")
     .replace(/&/g, "&amp;")
@@ -128,21 +126,16 @@ function escHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-/**
- * Minimal safe HTML renderer for blog body content.
- * Strips all tags except a safe allowlist and escapes attributes.
- * NOTE: For a real project, use a library like DOMPurify on the client.
- * This implementation is a safe fallback for plain-text content.
- */
+
 function safeRenderContent(rawContent) {
-  // Render as plain text with newlines converted to paragraphs
+  
   return rawContent
     .split(/\n{2,}/)
     .map(para => `<p>${escHtml(para.trim())}</p>`)
     .join("");
 }
 
-/* ── Pagination helper ────────────────────────────────────────── */
+
 function renderPagination(containerId, currentPage, totalPages, onPageChange) {
   const c = el(containerId);
   if (!c || totalPages <= 1) { if (c) c.innerHTML = ""; return; }
@@ -159,7 +152,7 @@ function renderPagination(containerId, currentPage, totalPages, onPageChange) {
   });
 }
 
-/* ── Blog card ────────────────────────────────────────────────── */
+
 function blogCardHTML(blog) {
   const date = fmtDate(blog.publishedAt || blog.createdAt);
   const author = blog.author?.name || "Unknown";

@@ -4,7 +4,7 @@ const { requireAuth, requireAdmin, rateLimiter } = require("../middleware/authMi
 
 const router = express.Router();
 
-// Users report content (rate limited to prevent abuse)
+
 const reportRateLimit = rateLimiter({ windowMs: 60 * 60 * 1000, max: 10 });
 router.post("/", requireAuth, reportRateLimit, reportController.submitReport);
 

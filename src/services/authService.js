@@ -3,10 +3,7 @@ const User = require("../models/userModel");
 
 const SALT_ROUNDS = 10;
 
-/**
- * Register a new user account. Role is always "user" regardless of input.
- * Returns safe fields only (never password hash).
- */
+
 const registerUser = async ({ name, email, password }) => {
   if (!name || !email || !password) {
     throw new Error("Name, email and password are required");
@@ -38,7 +35,7 @@ const registerUser = async ({ name, email, password }) => {
     name: cleanName,
     email: cleanEmail,
     password: hashedPassword
-    // role intentionally omitted — defaults to "user"
+    
   });
 
   return {
@@ -49,10 +46,7 @@ const registerUser = async ({ name, email, password }) => {
   };
 };
 
-/**
- * Verify credentials. Returns safe user fields on success.
- * Throws a generic message to avoid leaking which field was wrong.
- */
+
 const loginUser = async ({ email, password }) => {
   if (!email || !password) {
     throw new Error("Email and password are required");

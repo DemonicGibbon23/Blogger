@@ -2,19 +2,16 @@ const Comment = require("../models/commentModel");
 const Report = require("../models/reportModel");
 const Blog = require("../models/blogModel");
 
-/**
- * Add a comment or reply (parentComment = null for top-level).
- * One level of nesting only: replies cannot themselves have replies.
- */
+
 async function addComment({ blogId, authorId, content, parentCommentId = null }) {
   if (!content || !content.trim()) throw new Error("Comment content is required");
   if (content.trim().length > 3000) throw new Error("Comment must be 3000 characters or fewer");
 
-  // Verify blog exists and is published
+  
   const blog = await Blog.findById(blogId);
   if (!blog || blog.status !== "published") throw new Error("Blog not found");
 
-  // If replying, verify parent is a top-level comment on the same blog
+ 
   if (parentCommentId) {
     const parent = await Comment.findById(parentCommentId);
     if (!parent || String(parent.blog) !== String(blogId)) {
@@ -35,9 +32,7 @@ async function addComment({ blogId, authorId, content, parentCommentId = null })
   return comment.populate("author", "name");
 }
 
-/**
- * Get all top-level comments for a blog with their replies.
- */
+
 async function getCommentsForBlog(blogId) {
   const [topLevel, replies] = await Promise.all([
     Comment.find({ blog: blogId, parentComment: null })
@@ -50,7 +45,7 @@ async function getCommentsForBlog(blogId) {
       .lean()
   ]);
 
-  // Attach replies to their parents
+  
   const replyMap = new Map();
   for (const reply of replies) {
     const pid = String(reply.parentComment);
@@ -61,16 +56,13 @@ async function getCommentsForBlog(blogId) {
   return topLevel.map((c) => ({ ...c, replies: replyMap.get(String(c._id)) || [] }));
 }
 
-/**
- * Delete a comment (and its replies). Caller must verify ownership.
- */
+
 async function deleteComment(commentId) {
   const comment = await Comment.findById(commentId);
   if (!comment) throw new Error("Comment not found");
 
-  // Delete replies to this comment
+  
   await Comment.deleteMany({ parentComment: commentId });
-  // Delete reports targeting this comment
   await Report.deleteMany({ target: commentId, targetType: "Comment" });
   await Comment.findByIdAndDelete(commentId);
 }

@@ -4,7 +4,7 @@ const { requireAuth, rateLimiter } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Apply rate limiting to auth endpoints to slow brute-force attempts
+
 const authRateLimit = rateLimiter({ windowMs: 15 * 60 * 1000, max: 30 });
 
 router.post("/register", authRateLimit, authController.register);

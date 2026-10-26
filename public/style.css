@@ -1,10 +1,6 @@
-/* ═══════════════════════════════════════════════════════════════
-   Bloggr – stylesheet
-   Philosophy: readable, conventional blog site. Light background,
-   dark text, one restrained accent, no heavy gradients or neon.
-   ═══════════════════════════════════════════════════════════════ */
 
-/* ── Tokens ──────────────────────────────────────────────────── */
+
+
 :root {
   --bg:         #f9f9f7;
   --surface:    #ffffff;

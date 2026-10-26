@@ -8,7 +8,6 @@ async function register(req, res) {
       password: req.body.password
     });
 
-    // Establish session immediately after registration
     req.session.userId = user.id;
     req.session.role = user.role;
 
@@ -39,7 +38,6 @@ async function login(req, res) {
       password: req.body.password
     });
 
-    // Establish session
     req.session.userId = user.id;
     req.session.role = user.role;
 
@@ -66,7 +64,7 @@ async function logout(req, res) {
 }
 
 async function me(req, res) {
-  // requireAuth middleware already verified the session; attach full user from DB
+  
   const User = require("../models/userModel");
   try {
     const user = await User.findById(req.session.userId).select("-password");

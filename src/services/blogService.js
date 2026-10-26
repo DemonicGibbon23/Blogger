@@ -5,18 +5,13 @@ const Report = require("../models/reportModel");
 
 const PAGE_SIZE = 10;
 
-/**
- * Derive a plain-text excerpt from HTML or plain content.
- * Strips tags, collapses whitespace, trims to 280 chars.
- */
+
 function deriveExcerpt(content) {
   const text = content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
   return text.length > 280 ? text.slice(0, 277) + "…" : text;
 }
 
-/**
- * Create a new blog (defaults to draft).
- */
+
 async function createBlog({ title, content, tags, status, authorId }) {
   if (!title || !title.trim()) throw new Error("Title is required");
   if (!content || !content.trim()) throw new Error("Content is required");
@@ -41,9 +36,7 @@ async function createBlog({ title, content, tags, status, authorId }) {
   return blog;
 }
 
-/**
- * Update an existing blog. Ownership is enforced by the caller.
- */
+
 async function updateBlog(blogId, { title, content, tags, status }) {
   const blog = await Blog.findById(blogId);
   if (!blog) throw new Error("Blog not found");
@@ -70,30 +63,19 @@ async function updateBlog(blogId, { title, content, tags, status }) {
   return blog;
 }
 
-/**
- * Delete a blog and all dependent records.
- */
+
 async function deleteBlog(blogId) {
   const blog = await Blog.findById(blogId);
   if (!blog) throw new Error("Blog not found");
 
-  // Cascade: remove comments, votes, reports referencing this blog
+  
   await Comment.deleteMany({ blog: blogId });
   await Vote.deleteMany({ blog: blogId });
   await Report.deleteMany({ target: blogId, targetType: "Blog" });
-
-  // Also remove reports targeting comments of this blog (already deleted above,
-  // but clean up any report records that may reference those comment IDs)
-  // Comments are already deleted; their IDs no longer exist in DB.
-  // Reports with targetType:"Comment" pointing to deleted comments are orphaned.
-  // We handle this at report query time by tolerating null populate results.
-
   await Blog.findByIdAndDelete(blogId);
 }
 
-/**
- * List published blogs with optional search/tag/pagination.
- */
+
 async function listPublishedBlogs({ page = 1, search = "", tag = "" } = {}) {
   const filter = { status: "published" };
 
@@ -125,25 +107,19 @@ async function listPublishedBlogs({ page = 1, search = "", tag = "" } = {}) {
   };
 }
 
-/**
- * Get a single published blog by ID.
- */
+
 async function getBlogById(blogId) {
   const blog = await Blog.findById(blogId).populate("author", "name email").lean();
   if (!blog) throw new Error("Blog not found");
   return blog;
 }
 
-/**
- * List blogs belonging to a specific author (includes drafts).
- */
+
 async function listUserBlogs(authorId) {
   return Blog.find({ author: authorId }).sort({ updatedAt: -1 }).populate("author", "name").lean();
 }
 
-/**
- * Get vote counts for a blog and the requesting user's vote (if any).
- */
+
 async function getVoteSummary(blogId, userId) {
   const [votes, userVote] = await Promise.all([
     Vote.aggregate([

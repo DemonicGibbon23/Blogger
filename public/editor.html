@@ -44,7 +44,7 @@
     const { api: apiClient, requireSession: requireSessionFn, renderNav: renderNavFn, el: elFn, showAlert: showAlertFn, hideAlert: hideAlertFn, fmtDate: fmtDateFn } = window.Bloggr;
 
     const params = new URLSearchParams(window.location.search);
-    const editId = params.get("id"); // present when editing
+    const editId = params.get("id"); 
     let currentBlog = null;
 
     (async () => {
