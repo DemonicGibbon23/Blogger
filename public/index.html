@@ -1,23 +1,49 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Register - Bloggr</title>
-    <link rel="stylesheet" href="style.css">
-    <style>#message{color:#c00}</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bloggr – Read and write together</title>
+  <meta name="description" content="Bloggr is a community blogging platform. Discover stories, write your own, and join the conversation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero {
+      max-width: 600px;
+      margin: 80px auto;
+      text-align: center;
+      padding: 0 1.25rem;
+    }
+    .hero h1 { font-size: 2.4rem; margin-bottom: .75rem; }
+    .hero p   { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem; }
+    .hero-actions { display: flex; justify-content: center; gap: .75rem; flex-wrap: wrap; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Register</h1>
-        <form id="registerForm">
-            <input id="name" placeholder="Name" required />
-            <input id="email" type="email" placeholder="Email" required />
-            <input id="password" type="password" placeholder="Password" required />
-            <button type="submit">Register</button>
-        </form>
-        <p id="message"></p>
+  <nav class="nav" id="main-nav" aria-label="Main navigation"></nav>
+
+  <div class="hero">
+    <h1>Read and write together</h1>
+    <p>Discover ideas from people who think deeply and write well. Share yours.</p>
+    <div class="hero-actions" id="hero-actions">
+      <a href="explore.html" class="btn btn-secondary">Explore posts</a>
+      <a href="register.html" class="btn btn-primary">Get started</a>
     </div>
-    <script src="app.js"></script>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const { getSession: getSessionFn, renderNav: renderNavFn, el: elFn } = window.Bloggr;
+    (async () => {
+      await renderNavFn();
+      const user = await getSessionFn();
+      if (user) {
+        elFn("hero-actions").innerHTML = `
+          <a href="explore.html" class="btn btn-secondary">Explore posts</a>
+          <a href="editor.html"  class="btn btn-primary">Write a post</a>`;
+      }
+    })();
+  </script>
 </body>
 </html>

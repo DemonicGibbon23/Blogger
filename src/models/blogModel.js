@@ -6,17 +6,18 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      maxlenght: 200
+      maxlength: 200
     },
 
     content: {
       type: String,
       required: true
     },
+
     excerpt: {
       type: String,
-      trime: true,
-      maxlenght: 300,
+      trim: true,
+      maxlength: 300,
       default: ""
     },
 
@@ -40,12 +41,19 @@ const blogSchema = new mongoose.Schema(
     publishedAt: {
       type: Date,
       default: null
-    },
-
+    }
+  },
+  {
     timestamps: true
-
   }
 );
+
+// Efficient queries for published feed
+blogSchema.index({ status: 1, publishedAt: -1 });
+// Tag filtering
+blogSchema.index({ tags: 1, status: 1 });
+// Author's own blogs
+blogSchema.index({ author: 1, status: 1 });
 
 const Blog = mongoose.model("Blog", blogSchema);
 
