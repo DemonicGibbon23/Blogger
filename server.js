@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
+const { MongoStore } = require("connect-mongo");
 
 const connectDatabase = require("./src/config/database");
 const authRoutes = require("./src/routes/authRoutes");
@@ -12,6 +13,7 @@ const reportRoutes = require("./src/routes/reportRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 5000;
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -37,17 +39,25 @@ if (!process.env.SESSION_SECRET) {
   console.warn("[WARN] SESSION_SECRET is not set in .env – using insecure default.");
 }
 
+const sessionStore = MongoStore.create({
+  mongoUrl: process.env.MONGO_URI,
+  collectionName: "sessions",
+  ttl: 7 * 24 * 60 * 60,
+  autoRemove: "native"
+});
+
 app.use(
   session({
     name: "bloggr.sid",
     secret: sessionSecret,
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: isProduction,  // HTTPS-only in production
+      secure: isProduction,
       sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000
     }
   })
 );
